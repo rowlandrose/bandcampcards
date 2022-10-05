@@ -5,14 +5,51 @@
 <title>Bandcamp Trading Card Printing Sheet</title>
 <style>
 
+body {
+    margin: 0;
+}
+
+.no-print {
+    margin: 10px;
+}
+
+.page {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5mm 11mm;
+    padding: 10mm;
+    width: 8.5in;
+    height: 11in;
+    border: 3px solid #ccc;
+    margin: 10mm;
+}
+.page .card {
+    width: 64mm;
+    height: 89mm;
+    border: 1px solid #666;
+    border-radius: 3mm;
+}
+
+.page .card img.main_image {
+    object-fit: cover;
+    width: 59mm;
+    height: 59mm;
+    margin: 2.5mm 0 0 2.5mm;
+}
+
 @media print {
 
     .no-print {
         display: none !important;
     }
+    .page {
+        padding: 0;
+        border: none;
+        height: auto;
+        width: auto;
+        margin: 0;
+    }
 }
-
-
 
 </style>
 <script defer src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js"></script>
@@ -47,11 +84,11 @@ Instructions:
 <div id="app" x-data="{cards: cards}">
   <div class="page">
   	<template x-for="card in cards">
-	  	<div 
-	  		
-	  		class="card"
-	  		x-text="'This is a card: '+card.albumReleaseType"
-	  	></div>
+	  	<div class="card">
+            <img class="main_image" x-bind:src="card.albumRelease[0].image[0]" />
+        </div>
+        
+        
 	</template>
   </div>
 </div>
