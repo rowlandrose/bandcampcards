@@ -9,24 +9,36 @@ body {
     margin: 0;
 }
 
+body * {
+    box-sizing: border-box;
+}
+
 .no-print {
     margin: 10px;
 }
 
 .page {
+    font-family: "Century Gothic",       /* Windows (HP printer) */
+    "Avant Garde Gothic",   /* HP font name */
+    "Avant Garde",      /* MacOS */
+    "URW Gothic L",     /* Unix+X+FontConfig */
+    /* Fallback options */
+    helvetica,          /* Unix+X, MacOS */
+    sans-serif;
+
     display: flex;
     flex-wrap: wrap;
-    gap: 5mm 11mm;
-    padding: 10mm;
+    gap: 2mm 5mm;
+    padding: 2mm 5mm;
     width: 8.5in;
     height: 11in;
-    border: 3px solid #ccc;
+    border: 1mm solid #ccc;
     margin: 10mm;
 }
 .page .card {
     width: 64mm;
     height: 89mm;
-    border: 1px solid #666;
+    border: 0.3mm solid #ccc;
     border-radius: 3mm;
 }
 
@@ -34,7 +46,40 @@ body {
     object-fit: cover;
     width: 59mm;
     height: 59mm;
-    margin: 2.5mm 0 0 2.5mm;
+    margin: 2.5mm auto 0;
+    display: block;
+}
+
+.page .card section.info {
+    float: right;
+    width: 34mm;
+    margin-right: 4mm;
+    margin-top: 4mm;
+}
+.page .card section.info .title {
+    font-size: 0.9em;
+    font-weight: bold;
+}
+.page .card section.info .artist {
+    font-size: 0.8em;
+}
+
+.page .card .bc-logo {
+    height: 4mm;
+    overflow: hidden;
+    margin-left: 1.8mm;
+}
+.page .card .bc-logo img {
+    height: 169%;
+    margin-top: -1mm;
+}
+
+.page .card .qrcode {
+    width: 20mm;
+    margin-left: 2mm;
+}
+.page .card .qrcode img {
+    width: 100%;
 }
 
 @media print {
@@ -47,12 +92,13 @@ body {
         border: none;
         height: auto;
         width: auto;
-        margin: 0;
+        margin: 5mm 5mm 0;
     }
 }
 
 </style>
 <script defer src="https://unpkg.com/alpinejs@3.10.3/dist/cdn.min.js"></script>
+<script src="qrcode.js"></script>
 
 <script>
 
@@ -74,6 +120,7 @@ cards.push({"albumReleaseType":"AlbumRelease","@id":"https://umerecords.bandcamp
 <body>
 
 <p class="no-print">Please edit source code of this HTML to enter 9 albums of your choice from Bandcamp. All instructions are in source code. Just hit CTRL-U (or CMD-U on Mac).</p>
+<p class="no-print">When printing, turn of margins (More Settings > Margins in Chrome).</p>
 
 <!--
 
@@ -83,15 +130,37 @@ Instructions:
 
 <div id="app" x-data="{cards: cards}">
   <div class="page">
-  	<template x-for="card in cards">
+  	<template x-for="(card, index) in cards">
 	  	<div class="card">
             <img class="main_image" x-bind:src="card.albumRelease[0].image[0]" />
+            <section class="info">
+                <div class="title" x-text="card.name"></div>
+                <div class="artist" x-text="card.byArtist.name"></div>
+            </section>
+            <div class="bc-logo"><img src="bc-logo.png" /></div>
+            <div class="qrcode" x-bind:data-url="card['@id']"></div>
         </div>
-        
-        
 	</template>
   </div>
 </div>
+
+<script>
+
+document.addEventListener('alpine:initialized', function() {
+    draw_qrcodes();
+});
+
+function draw_qrcodes() {
+
+    var qrcodes = document.querySelectorAll(".qrcode");
+
+    for(var i = 0; i < qrcodes.length; i++) {
+        
+        new QRCode(qrcodes[i], qrcodes[i].getAttribute('data-url'));
+    }
+}
+
+</script>
 
 </body>
 </html>
